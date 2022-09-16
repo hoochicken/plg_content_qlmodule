@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="3.7" group="content" method="upgrade">
+    <name>PLG_CONTENT_QLMODULE</name>
+    <author>Mareike Riegel</author>
+    <creationDate>2017</creationDate>
+    <copyright>Copyright (C) 2017 ql.de All rights reserved.</copyright>
+    <authorEmail>mareike.riegel@ql.de</authorEmail>
+    <authorUrl>http://ql.de/</authorUrl>
+    <version>1.3.3</version>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <description>PLG_CONTENT_QLMODULE_DESCRIPTION</description>
+    <updateservers>
+        <server type="extension" priority="1" name="qlmodule - Updates"><![CDATA[https://www.blackforest-software.com/_scripts/updates/plg_content_qlmodule.xml]]></server>
+    </updateservers>
+    <files>
+        <filename plugin="qlmodule">qlmodule.php</filename>
+        <filename plugin="qlmodule">index.html</filename>
+        <folder plugin="qlmodule">language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">language/en-GB/en-GB.plg_content_qlmodule.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.plg_content_qlmodule.sys.ini</language>
+        <language tag="de-DE">language/de-DE/de-DE.plg_content_qlmodule.ini</language>
+        <language tag="de-DE">language/de-DE/de-DE.plg_content_qlmodule.sys.ini</language>
+    </languages>
+	<config>
+		<fields name="params">
+		</fields>
+	</config>
+</extension>
