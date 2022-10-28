@@ -179,13 +179,19 @@ class plgContentQlmodule extends JPlugin
      */
     function checkPublished($module)
     {
-        if (1 != $module->published) return false;
+        if (1 !== $module->published) return false;
         $date = date('Y-m-d H:i:s');
         if
         (
             ('0000-00-00 00:00:00' == $module->publish_up && '0000-00-00 00:00:00' == $module->publish_down)
             ||
             ('0000-00-00 00:00:00' == $module->publish_up && $date < $module->publish_down)
+            ||
+            (is_null($module->publish_up) && is_null($module->publish_down))
+            ||
+            (is_null($module->publish_up) && $date < $module->publish_down)
+            ||
+            ($date > $module->publish_up && is_null($module->publish_down))
             ||
             ($date > $module->publish_up && '0000-00-00 00:00:00' == $module->publish_down)
             ||
