@@ -3,6 +3,11 @@
 The content plugin enables you to call any published module you generates and display it in your article.
 Menu assignments have not to be set anymore.
 
+## What about a coffee ..
+
+I love coding. My extensions are for free. Wanna say thanks? You're welcome! 
+<https://www.buymeacoffee.com/mareikeRiegel>
+
 ## Basic usage
 
 Insert following tag into the article. The module with that very id will be loaded into article.
