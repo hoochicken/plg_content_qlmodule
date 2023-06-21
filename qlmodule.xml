@@ -16,7 +16,7 @@
         <filename plugin="qlmodule">qlmodule.php</filename>
         <filename plugin="qlmodule">index.html</filename>
         <folder plugin="qlmodule">language</folder>
-        <folder plugin="_jupdate">language</folder>
+        <folder plugin="qlmodule">_jupdate</folder>
     </files>
     <languages>
         <language tag="en-GB">language/en-GB/en-GB.plg_content_qlmodule.ini</language>
