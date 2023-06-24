@@ -52,7 +52,8 @@ class plgContentQlmodule extends JPlugin
      */
     function getContent($str)
     {
-        $regex = '!{' . $this->start . '(.*?)/}!s';
+        // $regex = '!{' . $this->start . '(.*?)/}!s';
+        $regex = '!{' . $this->start . '(.*?)([\/]{0,1})}!s';
         preg_match_all($regex, $str, $matches, PREG_SET_ORDER);
         $arr_content = [];
 
