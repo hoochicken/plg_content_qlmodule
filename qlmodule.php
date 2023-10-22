@@ -7,6 +7,9 @@
  */
 
 //no direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die ('Restricted Access');
 
 jimport('joomla.plugin.plugin');
@@ -18,9 +21,12 @@ class plgContentQlmodule extends JPlugin
     protected array $attributes = [];
     protected array $matches = [];
 
-    /**
-     * onContentPrepare :: some kind of controller of plugin
-     */
+    function __construct(&$subject, $config) {
+        $lang = Factory::getApplication()->getLanguage();
+        $lang->load('plg_content_qlmodule', dirname(__FILE__));
+        parent::__construct($subject, $config);
+    }
+
     public function onContentPrepare($context, &$article, &$params, $page = 0)
     {
         if ($context == 'com_finder.indexer') return true;
@@ -44,10 +50,6 @@ class plgContentQlmodule extends JPlugin
         return implode('', $html);
     }
 
-    /**
-     * @param $str
-     * @return array
-     */
     private function getContent($str)
     {
         // $regex = '!{' . $this->start . '(.*?)/}!s';
@@ -68,9 +70,6 @@ class plgContentQlmodule extends JPlugin
         return $str;
     }
 
-    /*
-     * method to get attributes
-     */
     private function getAttributes(string $str): array
     {
         $str = strip_tags($str);
@@ -99,9 +98,6 @@ class plgContentQlmodule extends JPlugin
         return $attributes;
     }
 
-    /*
-    * method to get attributes
-    */
     private function replaceTags(string $text): string
     {
         if (count($this->matches) === 0) return $text;
@@ -127,12 +123,12 @@ class plgContentQlmodule extends JPlugin
         $table = '#__modules';
         if (is_numeric($moduleId)) $where = '`id`=\'' . $moduleId . '\'';
         else {
-            JFactory::getApplication()->enqueueMessage(sprintf(JText::_('PLG_CONTENT_QLMODULE_NOTPROPERID'), $moduleId) . '<br />' . JText::_('PLG_CONTENT_QLMODULE_IDMUSTINTEGER'));
+            JFactory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_NOTPROPERID'), $moduleId) . '<br />' . JText::_('PLG_CONTENT_QLMODULE_IDMUSTINTEGER'));
             return false;
         }
         $module = self::askDb($selector, $table, $where);
         if (!$module) {
-            JFactory::getApplication()->enqueueMessage(sprintf(JText::_('PLG_CONTENT_QLMODULE_IDNOTFOUND'), $moduleId));
+            JFactory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_IDNOTFOUND'), $moduleId));
             return false;
         } else return $module;
     }
