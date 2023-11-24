@@ -42,7 +42,7 @@ class plgContentQlmodule extends CMSPlugin
     {
         if (!isset($arr['qlmoduleId'])) return '';
 
-        $module = self::getModule($arr['qlmoduleId']);
+        $module = self::getModule((int)$arr['qlmoduleId']);
         $html = [];
         if (!empty($module) && self::checkPublished($module) && 'mod_qlmodule' !== $module->module) {
             $html[] = $this->renderModule($module, $arr);
@@ -74,7 +74,7 @@ class plgContentQlmodule extends CMSPlugin
     {
         $str = strip_tags($str);
         $attributes = [];
-        $attributes['qlmoduleId'] = '';
+        $attributes['qlmoduleId'] = 0;
 
         //$selector=implode('|',$this->arr_attributes);
         //$regex='~('.$selector.')="(.*?)"~';
@@ -121,16 +121,17 @@ class plgContentQlmodule extends CMSPlugin
     {
         $selector = '*';
         $table = '#__modules';
-        if (is_numeric($moduleId)) $where = '`id`=\'' . $moduleId . '\'';
-        else {
+        if (0 >= $moduleId) {
             Factory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_NOTPROPERID'), $moduleId) . '<br />' . JText::_('PLG_CONTENT_QLMODULE_IDMUSTINTEGER'));
             return false;
         }
+        $where = '`id`=\'' . $moduleId . '\'';
         $module = self::askDb($selector, $table, $where);
         if (!$module) {
             Factory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_IDNOTFOUND'), $moduleId));
             return false;
-        } else return $module;
+        }
+        return $module;
     }
 
     private function renderModule(stdClass $module, array $params = []): string
