@@ -9,12 +9,13 @@
 //no direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\CMSPlugin;
 
 defined('_JEXEC') or die ('Restricted Access');
 
 jimport('joomla.plugin.plugin');
 
-class plgContentQlmodule extends JPlugin
+class plgContentQlmodule extends CMSPlugin
 {
 
     protected string $start = 'qlmodule';
@@ -43,16 +44,15 @@ class plgContentQlmodule extends JPlugin
 
         $module = self::getModule($arr['qlmoduleId']);
         $html = [];
-        if (false != $module && 1 == self::checkPublished($module) && 'mod_qlmodule' != $module->module) {
+        if (!empty($module) && self::checkPublished($module) && 'mod_qlmodule' !== $module->module) {
             $html[] = $this->renderModule($module, $arr);
         }
-        //print_R($html);die;
+
         return implode('', $html);
     }
 
     private function getContent($str)
     {
-        // $regex = '!{' . $this->start . '(.*?)/}!s';
         $regex = '!{' . $this->start . '(.*?)([\/]{0,1})}!s';
         preg_match_all($regex, $str, $matches, PREG_SET_ORDER);
         $arr_content = [];
@@ -106,7 +106,7 @@ class plgContentQlmodule extends JPlugin
             $arrAttributes = $this->getAttributes($match[1]);
             $output = '';
             $module = self::getModule($arrAttributes['id']);
-            if (false != $module && 1 == self::checkPublished($module)) {
+            if (!empty($module) && self::checkPublished($module)) {
                 if ('mod_qlmodule' != $module->module) {
                     if (isset($this->arr_params[$k])) $output .= $this->renderModule($module, $this->arr_params[$k]);
                     else $output .= $this->renderModule($module);
@@ -123,19 +123,19 @@ class plgContentQlmodule extends JPlugin
         $table = '#__modules';
         if (is_numeric($moduleId)) $where = '`id`=\'' . $moduleId . '\'';
         else {
-            JFactory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_NOTPROPERID'), $moduleId) . '<br />' . JText::_('PLG_CONTENT_QLMODULE_IDMUSTINTEGER'));
+            Factory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_NOTPROPERID'), $moduleId) . '<br />' . JText::_('PLG_CONTENT_QLMODULE_IDMUSTINTEGER'));
             return false;
         }
         $module = self::askDb($selector, $table, $where);
         if (!$module) {
-            JFactory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_IDNOTFOUND'), $moduleId));
+            Factory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_IDNOTFOUND'), $moduleId));
             return false;
         } else return $module;
     }
 
     private function renderModule(stdClass $module, array $params = []): string
     {
-        $renderer = JFactory::getDocument()->loadRenderer('module');
+        $renderer = Factory::getApplication()->getDocument()->loadRenderer('module');
         $params = json_encode(array_merge((array)json_decode($module->params), $params));
         $module->params = $params;
         //echo "<pre>";print_r($module->params);die;
@@ -156,10 +156,9 @@ class plgContentQlmodule extends JPlugin
 
     private function checkPublished(stdClass $module)
     {
-        if (1 !== $module->published) return false;
+        if (!$module->published) return false;
         $date = date('Y-m-d H:i:s');
-        if
-        (
+        return
             ('0000-00-00 00:00:00' == $module->publish_up && '0000-00-00 00:00:00' == $module->publish_down)
             ||
             ('0000-00-00 00:00:00' == $module->publish_up && $date < $module->publish_down)
@@ -172,14 +171,12 @@ class plgContentQlmodule extends JPlugin
             ||
             ($date > $module->publish_up && '0000-00-00 00:00:00' == $module->publish_down)
             ||
-            ($date > $module->publish_up && $date < $module->publish_down)
-        ) return true;
-        else return false;
+            ($date > $module->publish_up && $date < $module->publish_down);
     }
 
     private function askDb($selector, $table, $where)
     {
-        $db = JFactory::getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $db->setQuery(sprintf('SELECT %s FROM `%s` WHERE %s', $selector, $table, $where));
         return $db->loadObject();
     }
@@ -187,6 +184,6 @@ class plgContentQlmodule extends JPlugin
     private function addStyles()
     {
         $styles = [];
-        JFactory::getDocument()->addStyleDeclaration(implode("\n", $styles));
+        Factory::getApplication()->getDocument()->addStyleDeclaration(implode("\n", $styles));
     }
 }
