@@ -122,7 +122,7 @@ class plgContentQlmodule extends CMSPlugin
         $selector = '*';
         $table = '#__modules';
         if (0 >= $moduleId) {
-            Factory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_NOTPROPERID'), $moduleId) . '<br />' . JText::_('PLG_CONTENT_QLMODULE_IDMUSTINTEGER'));
+            Factory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_NOTPROPERID'), $moduleId) . '<br />' . Text::_('PLG_CONTENT_QLMODULE_IDMUSTINTEGER'));
             return false;
         }
         $where = '`id`=\'' . $moduleId . '\'';
