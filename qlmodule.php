@@ -22,10 +22,19 @@ class plgContentQlmodule extends CMSPlugin
     protected array $attributes = [];
     protected array $matches = [];
 
-    function __construct(&$subject, $config) {
-        $lang = Factory::getApplication()->getLanguage();
-        $lang->load('plg_content_qlmodule', dirname(__FILE__));
+    public function __construct($subject, $config)
+    {
+        $this->initLanguage();
         parent::__construct($subject, $config);
+    }
+
+    public function initLanguage()
+    {
+        $lang = Factory::getApplication()->getLanguage();
+        if (!empty($lang)) {
+            return;
+        }
+        $lang->load('plg_content_qlmodule', dirname(__FILE__));
     }
 
     public function onContentPrepare($context, &$article, &$params, $page = 0)
