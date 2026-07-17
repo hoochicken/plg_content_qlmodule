@@ -11,7 +11,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 
-defined('_JEXEC') or die ('Restricted Access');
+defined('_JEXEC') || die ('Restricted Access');
 
 jimport('joomla.plugin.plugin');
 
@@ -19,7 +19,9 @@ class plgContentQlmodule extends CMSPlugin
 {
 
     protected string $start = 'qlmodule';
+    
     protected array $attributes = [];
+    
     protected array $matches = [];
 
     public function __construct($subject, $config)
@@ -28,12 +30,13 @@ class plgContentQlmodule extends CMSPlugin
         parent::__construct($subject, $config);
     }
 
-    public function initLanguage()
+    public function initLanguage(): void
     {
         $lang = Factory::getApplication()->getLanguage();
         if (!empty($lang)) {
             return;
         }
+        
         $lang->load('plg_content_qlmodule', dirname(__FILE__));
     }
 
@@ -42,9 +45,11 @@ class plgContentQlmodule extends CMSPlugin
         if ($context === 'com_finder.indexer') {
             return true;
         }
+        
         if (!str_contains($article->text, '{' . $this->start)) {
             return true;
         }
+        
         $article->text = $this->getContent($article->text);
         return true;
     }
@@ -62,6 +67,7 @@ class plgContentQlmodule extends CMSPlugin
         if (empty($module) || !self::checkPublished($module) || 'mod_qlmodule' !== $module->module) {
             return '';
         }
+        
         return $this->renderModule($module, $arr);
     }
 
@@ -71,7 +77,9 @@ class plgContentQlmodule extends CMSPlugin
         preg_match_all($regex, $str, $matches, PREG_SET_ORDER);
         $arr_content = [];
 
-        if (0 === count($matches)) return $str;
+        if ([] === $matches) {
+            return $str;
+        }
 
         foreach ($matches as $k => $v) {
             $arr_content[$k] = [];
@@ -81,6 +89,7 @@ class plgContentQlmodule extends CMSPlugin
             $str = str_replace($v[0], $html, $str);
             unset($html);
         }
+        
         return $str;
     }
 
@@ -95,40 +104,23 @@ class plgContentQlmodule extends CMSPlugin
         $regex = '~(.*?)="(.*?)"~';
         preg_match_all($regex, $str, $matches);
         //echo '<pre>'; echo $str;print_r($matches);die;
-        foreach ($matches[0] as $k => $v) {
+        foreach (array_keys($matches[0]) as $k) {
             if ('' != $matches[2][$k]) {
                 $newKey = trim($matches[1][$k]);
                 $newValue = $matches[2][$k];
                 if (false !== strpos($newValue, 'JSON')) {
                     $newValue = substr($newValue, 4);
-                    $newValue = str_replace('\'', '"', $newValue);
+                    $newValue = str_replace("'", '"', $newValue);
                     $newValue = json_decode($newValue);
                 }
+                
                 $newValue = str_replace('~~', "\n", $newValue);
                 $attributes[$newKey] = $newValue;
             }
         }
+        
         //echo '<pre>'; print_r($attributes);die;
         return $attributes;
-    }
-
-    private function replaceTags(string $text): string
-    {
-        if (count($this->matches) === 0) return $text;
-
-        foreach ($this->matches as $k => $match) {
-            $arrAttributes = $this->getAttributes($match[1]);
-            $output = '';
-            $module = self::getModule($arrAttributes['id']);
-            if (!empty($module) && self::checkPublished($module)) {
-                if ('mod_qlmodule' != $module->module) {
-                    if (isset($this->arr_params[$k])) $output .= $this->renderModule($module, $this->arr_params[$k]);
-                    else $output .= $this->renderModule($module);
-                }
-            }
-            $text = preg_replace("|$match[0]|", addcslashes($output, '\\$'), $text, 1);
-        }
-        return $text;
     }
 
     public function getModule(int $moduleId)
@@ -139,12 +131,14 @@ class plgContentQlmodule extends CMSPlugin
             Factory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_NOTPROPERID'), $moduleId) . '<br />' . Text::_('PLG_CONTENT_QLMODULE_IDMUSTINTEGER'));
             return false;
         }
-        $where = '`id`=\'' . $moduleId . '\'';
+        
+        $where = "`id`='" . $moduleId . "'";
         $module = self::askDb($selector, $table, $where);
-        if (!$module) {
+        if ($module === []) {
             Factory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_IDNOTFOUND'), $moduleId));
             return false;
         }
+        
         return $module;
     }
 
@@ -164,6 +158,7 @@ class plgContentQlmodule extends CMSPlugin
         if (!$module->published) {
             return false;
         }
+        
         $date = date('Y-m-d H:i:s');
         return
             ('0000-00-00 00:00:00' == $module->publish_up && '0000-00-00 00:00:00' == $module->publish_down)
@@ -181,7 +176,7 @@ class plgContentQlmodule extends CMSPlugin
             ($date > $module->publish_up && $date < $module->publish_down);
     }
 
-    private function askDb($selector, $table, $where): array
+    private function askDb(string $selector, string $table, string $where): array
     {
         $db = Factory::getContainer()->get('DatabaseDriver');
         $db->setQuery(sprintf('SELECT %s FROM `%s` WHERE %s', $selector, $table, $where));

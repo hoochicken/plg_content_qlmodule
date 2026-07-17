@@ -35,3 +35,10 @@ Further Settings:
 * In case a module param asks for a linebreak, set a double tilde (~~).
 * If you need a json within param or an array, use param="JSON['first','second']", add alternating variables {qlmodule qlmoduleId="HERE_YOUR_MODULE_ID" codeParams="{'numContactId':'13','strClass':'one_third'}" /}; codeParams can be caught by "$codeParams"
 * As params can be set - though limitedly - for different callings. E. g. so you need only 1 generated module for 5 callings, just set params within tag.
+
+## Maintenance
+
+~~~shell
+vendor/bin/rector --dry-run
+vendor/bin/rector
+~~~
