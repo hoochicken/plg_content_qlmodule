@@ -64,7 +64,7 @@ class plgContentQlmodule extends CMSPlugin
         }
 
         $module = self::getModule((int)$arr['qlmoduleId'] ?? 0);
-        if (empty($module) || !self::checkPublished($module) || 'mod_qlmodule' !== $module->module) {
+        if (empty($module) || !self::checkPublished($module) || 'mod_qlmodule' === $module->module) {
             return '';
         }
         
@@ -105,18 +105,19 @@ class plgContentQlmodule extends CMSPlugin
         preg_match_all($regex, $str, $matches);
         //echo '<pre>'; echo $str;print_r($matches);die;
         foreach (array_keys($matches[0]) as $k) {
-            if ('' != $matches[2][$k]) {
-                $newKey = trim($matches[1][$k]);
-                $newValue = $matches[2][$k];
-                if (false !== strpos($newValue, 'JSON')) {
-                    $newValue = substr($newValue, 4);
-                    $newValue = str_replace("'", '"', $newValue);
-                    $newValue = json_decode($newValue);
-                }
-                
-                $newValue = str_replace('~~', "\n", $newValue);
-                $attributes[$newKey] = $newValue;
+            if (empty($matches[2][$k])) {
+                continue;
             }
+            $newKey = trim($matches[1][$k]);
+            $newValue = $matches[2][$k];
+            if (str_contains($newValue, 'JSON')) {
+                $newValue = substr($newValue, 4);
+                $newValue = str_replace("'", '"', $newValue);
+                $newValue = json_decode($newValue);
+            }
+
+            $newValue = str_replace('~~', "\n", $newValue);
+            $attributes[$newKey] = $newValue;
         }
         
         //echo '<pre>'; print_r($attributes);die;
@@ -134,7 +135,7 @@ class plgContentQlmodule extends CMSPlugin
         
         $where = "`id`='" . $moduleId . "'";
         $module = self::askDb($selector, $table, $where);
-        if ($module === []) {
+        if (empty($module)) {
             Factory::getApplication()->enqueueMessage(sprintf(Text::_('PLG_CONTENT_QLMODULE_IDNOTFOUND'), $moduleId));
             return false;
         }
