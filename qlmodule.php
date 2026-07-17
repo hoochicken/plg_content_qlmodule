@@ -176,7 +176,7 @@ class plgContentQlmodule extends CMSPlugin
             ($date > $module->publish_up && $date < $module->publish_down);
     }
 
-    private function askDb(string $selector, string $table, string $where): array
+    private function askDb(string $selector, string $table, string $where): stdClass
     {
         $db = Factory::getContainer()->get('DatabaseDriver');
         $db->setQuery(sprintf('SELECT %s FROM `%s` WHERE %s', $selector, $table, $where));
