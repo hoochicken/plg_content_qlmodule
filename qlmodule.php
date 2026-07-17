@@ -39,25 +39,30 @@ class plgContentQlmodule extends CMSPlugin
 
     public function onContentPrepare($context, &$article, &$params, $page = 0)
     {
-        if ($context == 'com_finder.indexer') return true;
-        if (false === strpos($article->text, '{' . $this->start)) return true;
+        if ($context === 'com_finder.indexer') {
+            return true;
+        }
+        if (!str_contains($article->text, '{' . $this->start)) {
+            return true;
+        }
         $article->text = $this->getContent($article->text);
+        return true;
     }
 
     /**
      *
      */
-    private function getHtml(array $arr)
+    private function getHtml(array $arr): string
     {
-        if (!isset($arr['qlmoduleId'])) return '';
-
-        $module = self::getModule((int)$arr['qlmoduleId']);
-        $html = [];
-        if (!empty($module) && self::checkPublished($module) && 'mod_qlmodule' !== $module->module) {
-            $html[] = $this->renderModule($module, $arr);
+        if (!isset($arr['qlmoduleId'])) {
+            return '';
         }
 
-        return implode('', $html);
+        $module = self::getModule((int)$arr['qlmoduleId'] ?? 0);
+        if (empty($module) || !self::checkPublished($module) || 'mod_qlmodule' !== $module->module) {
+            return '';
+        }
+        return $this->renderModule($module, $arr);
     }
 
     private function getContent($str)
@@ -146,7 +151,7 @@ class plgContentQlmodule extends CMSPlugin
     private function renderModule(stdClass $module, array $params = []): string
     {
         $renderer = Factory::getApplication()->getDocument()->loadRenderer('module');
-        $params = json_encode(array_merge((array)json_decode($module->params), $params));
+        $params = json_encode(array_merge(json_decode($module->params, true), $params));
         $module->params = $params;
         //echo "<pre>";print_r($module->params);die;
         ob_start();
