@@ -1,7 +1,7 @@
 <?php
 /**
  * @package        plg_content_qlmodule
- * @copyright    Copyright (C) 2023 ql.de All rights reserved.
+ * @copyright    Copyright (C) 2025 ql.de All rights reserved.
  * @author        Mareike Riegel mareike.riegel@ql.de
  * @license        GNU General Public License version 2 or later; see LICENSE.txt
  */
@@ -159,19 +159,11 @@ class plgContentQlmodule extends CMSPlugin
         return ob_get_clean();
     }
 
-    private function checkQlmoduleVersion(stdClass $module): bool
+    private function checkPublished(stdClass $module): bool
     {
-        $selector = '*';
-        $table = '#__extensions';
-        $where = '`name`=\'' . $module->module . '\'';
-        $result = self::askDb($selector, $table, $where);
-        $manifest_cache = json_decode($result->manifest_cache);
-        return $manifest_cache->version >= 7;
-    }
-
-    private function checkPublished(stdClass $module)
-    {
-        if (!$module->published) return false;
+        if (!$module->published) {
+            return false;
+        }
         $date = date('Y-m-d H:i:s');
         return
             ('0000-00-00 00:00:00' == $module->publish_up && '0000-00-00 00:00:00' == $module->publish_down)
@@ -189,16 +181,10 @@ class plgContentQlmodule extends CMSPlugin
             ($date > $module->publish_up && $date < $module->publish_down);
     }
 
-    private function askDb($selector, $table, $where)
+    private function askDb($selector, $table, $where): array
     {
         $db = Factory::getContainer()->get('DatabaseDriver');
         $db->setQuery(sprintf('SELECT %s FROM `%s` WHERE %s', $selector, $table, $where));
         return $db->loadObject();
-    }
-
-    private function addStyles()
-    {
-        $styles = [];
-        Factory::getApplication()->getDocument()->addStyleDeclaration(implode("\n", $styles));
     }
 }

@@ -2,8 +2,8 @@
 <extension type="plugin" version="3.7" group="content" method="upgrade">
     <name>PLG_CONTENT_QLMODULE_QLMODULE</name>
     <author>Mareike Riegel</author>
-    <creationDate>2023</creationDate>
-    <copyright>Copyright (C) 2023 ql.de All rights reserved.</copyright>
+    <creationDate>2025</creationDate>
+    <copyright>Copyright (C) 2025 ql.de All rights reserved.</copyright>
     <authorEmail>mareike.riegel@ql.de</authorEmail>
     <authorUrl>http://ql.de/</authorUrl>
     <version>1.7.0</version>
